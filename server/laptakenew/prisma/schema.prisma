@@ -1,0 +1,38 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password String
+  phone     String?
+  rentals   Rental[] // Связь с таблицей аренды
+}
+model Laptop {
+  id           Int      @id @default(autoincrement())
+  model        String
+  brand        String
+  pricePerDay  Float
+  isAvailable  Boolean  @default(true)
+  rentals      Rental[] // Связь с таблицей аренды
+}
+
+model Rental {
+  id         Int      @id @default(autoincrement())
+  userId     Int
+  laptopId   Int
+  startDate  DateTime
+  endDate    DateTime
+  status     String   // 'active', 'completed', 'cancelled'
+  
+  user   User    @relation(fields: [userId], references: [id])
+  laptop Laptop  @relation(fields: [laptopId], references: [id])
+
+  @@map("rentals") // Имя таблицы в базе данных
+}
