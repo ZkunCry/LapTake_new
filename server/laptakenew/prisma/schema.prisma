@@ -1,3 +1,15 @@
+
+enum RentalStatus {
+  PENDING // Ожидает подтверждения
+  CONFIRMED // Подтверждена
+  COMPLETED // Завершена
+  CANCELLED // Отменена
+}
+enum PaymentStatus {
+  PENDING // Ожидает оплаты
+  PAID // Оплачено
+  FAILED // Платеж не прошел
+}
 generator client {
   provider = "prisma-client-js"
 }
@@ -14,14 +26,19 @@ model User {
   phone     String?
   refreshToken String?
   rentals   Rental[] // Связь с таблицей аренды
+   reviews  Review[] // Обратная связь с моделью Review
 }
 model Laptop {
   id           Int      @id @default(autoincrement())
-  model        String
-  brand        String
   pricePerDay  Float
   isAvailable  Boolean  @default(true)
   rentals      Rental[] // Связь с таблицей аренды
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  brand       String   // Бренд ноутбука (например, Apple, Dell)
+  model       String   // Модель ноутбука
+  specs       String   // Технические характеристики (процессор, память, экран и т.д.)
+  reviews  Review[] 
 }
 
 model Rental {
@@ -30,10 +47,36 @@ model Rental {
   laptopId   Int
   startDate  DateTime
   endDate    DateTime
-  status     String   // 'active', 'completed', 'cancelled'
- 
+  totalAmount Float    // Итоговая стоимость аренды
   user   User    @relation(fields: [userId], references: [id])
   laptop Laptop  @relation(fields: [laptopId], references: [id])
-
+  transaction Transaction? 
+  status      RentalStatus @default(PENDING)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
   @@map("rentals") // Имя таблицы в базе данных
+}
+model Transaction {
+  id          Int      @id @default(autoincrement())
+  rentalId    Int      @unique
+  rental      Rental        @relation(fields: [rentalId], references: [id]) 
+  amount      Float    // Сумма платежа
+  paymentDate DateTime @default(now()) // Дата платежа
+  status      PaymentStatus @default(PENDING)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+
+model Review {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  laptopId  Int
+  laptop    Laptop   @relation(fields: [laptopId], references: [id])
+  rating    Int      // Рейтинг (от 1 до 5)
+  comment   String?  // Опциональный комментарий
+  createdAt DateTime @default(now())
+
+  @@unique([userId, laptopId]) 
 }
