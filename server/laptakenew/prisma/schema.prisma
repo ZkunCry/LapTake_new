@@ -12,6 +12,7 @@ model User {
   email     String   @unique
   password String
   phone     String?
+  refreshToken String?
   rentals   Rental[] // Связь с таблицей аренды
 }
 model Laptop {
@@ -30,7 +31,7 @@ model Rental {
   startDate  DateTime
   endDate    DateTime
   status     String   // 'active', 'completed', 'cancelled'
-  
+ 
   user   User    @relation(fields: [userId], references: [id])
   laptop Laptop  @relation(fields: [laptopId], references: [id])
 

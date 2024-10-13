@@ -1,0 +1,5 @@
+export enum ENV {
+  DATABASE_URL,
+  ACCESS_TOKEN,
+  REFRESH_TOKEN,
+}
