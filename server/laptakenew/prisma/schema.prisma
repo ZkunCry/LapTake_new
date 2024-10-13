@@ -26,7 +26,7 @@ model User {
   phone     String?
   refreshToken String?
   rentals   Rental[] // Связь с таблицей аренды
-   reviews  Review[] // Обратная связь с моделью Review
+  reviews  Review[] // Обратная связь с моделью Review
 }
 model Laptop {
   id           Int      @id @default(autoincrement())

@@ -3,3 +3,8 @@ export enum ENV {
   ACCESS_TOKEN,
   REFRESH_TOKEN,
 }
+
+export enum PRIVILEGE {
+  ADMIN,
+  USER,
+}
