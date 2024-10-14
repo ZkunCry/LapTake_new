@@ -8,13 +8,14 @@ import { JwtService } from "@nestjs/jwt";
 import * as argon2 from "argon2";
 import { PrismaService } from "src/prisma/prisma.service";
 import type { ILogin, IRegister } from "src/types/types";
+import { UsersService } from "src/users/users.service";
 @Injectable()
 export class AuthService {
   constructor(
     private readonly prisma: PrismaService,
-
     private readonly configService: ConfigService,
-    private readonly jwtService: JwtService
+    private readonly jwtService: JwtService,
+    private readonly userService: UsersService
   ) {}
 
   async signUp(userCredentials: IRegister) {
@@ -26,16 +27,14 @@ export class AuthService {
       throw new ConflictException("User with this email already exists");
     }
     const hashedPassword = await argon2.hash(userCredentials.password);
-    const user = await this.prisma.user.create({
-      data: {
-        name: userCredentials.name,
-        email: userCredentials.email,
-        password: hashedPassword,
-      },
+
+    const user = await this.userService.create({
+      ...userCredentials,
+      password: hashedPassword,
+      refreshToken: null,
     });
     const tokens = await this.generateTokens(user.id, user.email);
-    console.log(tokens);
-
+    await this.updateRefreshToken(user.id, tokens.refreshToken);
     const { password, refreshToken, ...response } = user;
     return { ...response, ...tokens };
   }
