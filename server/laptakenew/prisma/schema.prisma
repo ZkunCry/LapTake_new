@@ -18,6 +18,7 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
 model User {
   id        Int      @id @default(autoincrement())
   name      String
@@ -27,6 +28,7 @@ model User {
   refreshToken String?
   rentals   Rental[] // Связь с таблицей аренды
   reviews  Review[] // Обратная связь с моделью Review
+  role  Role  @default(USER)
 }
 model Laptop {
   id           Int      @id @default(autoincrement())
@@ -79,4 +81,8 @@ model Review {
   createdAt DateTime @default(now())
 
   @@unique([userId, laptopId]) 
+}
+enum  Role {
+  USER
+  ADMIN
 }

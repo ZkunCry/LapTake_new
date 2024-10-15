@@ -68,20 +68,8 @@ export class AuthService {
     if (!user || !user.refreshToken) {
       throw new UnauthorizedException("Access denied");
     }
-
-    // Проверяем совпадение refreshToken
-    const isRefreshTokenValid = await argon2.verify(
-      user.refreshToken,
-      refreshToken
-    );
-    if (!isRefreshTokenValid) {
-      throw new UnauthorizedException("Invalid refresh token");
-    }
-
-    // Генерируем новые токены
     const tokens = await this.generateTokens(user.id, user.email);
 
-    // Обновляем refreshToken в базе данных
     await this.updateRefreshToken(user.id, tokens.refreshToken);
 
     return tokens;
