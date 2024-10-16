@@ -51,12 +51,12 @@ model Rental {
   endDate    DateTime
   totalAmount Float    // Итоговая стоимость аренды
   user   User    @relation(fields: [userId], references: [id])
-  laptop Laptop  @relation(fields: [laptopId], references: [id])
+  laptop Laptop  @relation(fields: [laptopId], references: [id],onDelete: Cascade)
   transaction Transaction? 
   status      RentalStatus @default(PENDING)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  @@map("rentals") // Имя таблицы в базе данных
+ 
 }
 model Transaction {
   id          Int      @id @default(autoincrement())

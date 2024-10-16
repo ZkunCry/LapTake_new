@@ -1,17 +1,40 @@
-import { Body, Controller, Post, Get } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Post,
+  Get,
+  Delete,
+  Param,
+  Put,
+} from "@nestjs/common";
 import { LaptopService } from "./laptop.service";
-import { CreateLaptopDto } from "./laptop.dto";
+import { CreateLaptopDto } from "./dto/create-laptop.dto";
+import type { UpdateLaptopDto } from "./dto/update-laptop.dto";
 
 @Controller("laptop")
 export class LaptopController {
   constructor(private readonly laptopService: LaptopService) {}
 
   @Post("/create")
-  createLaptop(@Body() createLaptopDto: CreateLaptopDto) {
-    return this.laptopService.createLaptop(createLaptopDto);
+  async createLaptop(@Body() createLaptopDto: CreateLaptopDto) {
+    return await this.laptopService.createLaptop(createLaptopDto);
+  }
+  @Delete("/delete/:id")
+  async deleteLaptop(@Param("id") laptopId: number) {
+    return await this.laptopService.deleteLaptop(laptopId);
+  }
+  @Put("/update/:id")
+  async updateLaptop(
+    @Param("id") laptopId: number,
+    @Body() updateLaptopDto: UpdateLaptopDto
+  ) {
+    return await this.laptopService.updateLaptop({
+      laptopId,
+      ...updateLaptopDto,
+    });
   }
   @Get("/all")
-  getAll() {
-    return this.laptopService.findAll();
+  async getAll() {
+    return await this.laptopService.findAll();
   }
 }
