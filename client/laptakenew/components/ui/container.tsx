@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 
 export interface ContainerProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
-  className: string;
+  className?: string;
 }
 
 const Container: React.FC<ContainerProps> = ({
